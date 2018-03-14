@@ -1,0 +1,19 @@
+{
+    "exeName":"@WEBOS_INSTALL_SBINDIR@/SettingsService",
+    "type": "regular",
+    "allowedNames": ["com.webos.settingsservice", "com.lge.settingsservice", "com.webos.service.settings"],
+    "permissions": [
+        {
+            "service":"com.webos.settingsservice",
+            "outbound":["*"]
+        },
+        {
+            "service":"com.lge.settingsservice",
+            "outbound":["*"]
+        },
+        {
+            "service":"com.webos.service.settings",
+            "outbound":["*"]
+        }
+    ]
+}

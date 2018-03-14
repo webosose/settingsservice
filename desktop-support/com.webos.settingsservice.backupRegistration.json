@@ -1,0 +1,5 @@
+{
+    "id": "com.webos.settingsservice",
+    "preBackup": "backup/preBackup",
+    "postRestore": "backup/postRestore"
+}

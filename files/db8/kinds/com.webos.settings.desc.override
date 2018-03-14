@@ -1,0 +1,12 @@
+{
+  "id":"com.webos.settings.desc.override:1",
+  "owner":"com.webos.settingsservice",
+  "extends":["com.webos.settings.desc:1"],
+  "indexes":
+  [
+      {"name": "keysearch", "props": [{"name": "key"}] },
+      {"name": "volatilesearch", "props": [{"name": "volatile"}] },
+      {"name": "countrysearch", "props": [{"name": "country", "tokenize":"all", "default":"none"}] }
+  ],
+  "sync": true
+}

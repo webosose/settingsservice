@@ -1,0 +1,14 @@
+{
+    "role": {
+        "exeName":"/usr/lib/luna/SettingsService",
+        "type": "regular",
+        "allowedNames": ["com.lge.settingsservice"]
+    },
+    "permissions": [
+        {
+            "service":"com.lge.settingsservice",
+            "inbound":["*"],
+            "outbound":["*"]
+        }
+    ]
+}

@@ -1,0 +1,64 @@
+{
+	"id":"com.webos.settings.desc:1",
+	"owner":"com.webos.settingsservice",
+	"schema":{
+		"type":"object",
+		"properties":{
+			"key":{ "type":"string", "optional":false, "description":"KEY string of the setting" },
+            "dbtype":{ "type":"string", "optional":true, "description":"G(global) or S(Per source)", "default":"G"},
+			"volatile":{"type":"boolean", "optional":true, "description":"If this flag is true, this key is always initialized when system is reset", "default": false},
+            "valueCheck": {"type":"boolean", "optional":true, "description":"If this flag is true, settingsservice chekck input validation", "default": false},
+			"ui": {
+				"type":"object",
+				"properties":{
+					"widget":{ "type":"string", "optional":true, "description":"describe UI component for valid values"},
+					"displayName":{ "type":"string", "optional":true, "description":"displayname is the title of setting"},
+					"visible":{ "type":"boolean", "optional":true, "description":"This entry couldn't be displayed when this flag is false"},
+					"active":{ "type":"boolean", "optional":true, "description":"This entry couldn't be changed when this flag is false"}
+				},
+                "optional":true,
+				"description":"setting UI draw component with this"
+			},
+			"vtype":{
+				"type":"string",
+				"enum":["Array", "ArrayExt", "Range", "Date", "File", "Callback"],
+				"optional":true,
+				"description":"This peroperty must be set for valid values",
+			},
+			"values":{
+				"type":"object",
+				"properties":{
+                    "arrayExt":{ "type":"array", "item":"object", "optional":true, "description":"descrete valid values (extended)", "default":[]},
+					"array":{ "type":"array", "item":"object", "optional":true, "description":"descrete valid values", "default":[]},
+					"range":{
+						"type":"object",
+						"properties":{
+							"min": {"type":"number", "optional":false},
+							"max": {"type":"number", "optional":false},
+							"interval": {"type":"number", "optional":false}
+						},
+						"optional":true,
+						"description":"If vtype is range, refer this",
+                        "deafult":{}
+					},
+					"date":{ "type":"string", "optional":true, "description":"If type is date, this this property. String format is ISO-8601", "default":""},
+					"file":{ "type":"string", "optional":true, "description":"external json file for valid list", "default":""},
+					"callback":{
+						"type":"object",
+						"properties": {
+							"uri": {"type":"string"},
+							"method": {"type":"string"},
+							"parameter": {"type":"object"},
+						},
+						"optional":true,
+						"description":"If vtype is callback, this property is refered",
+                        "default":{}
+					},
+				},
+                "optional":true,
+				"description":"describes available valid values"
+			}
+		},
+	},
+	"sync": true
+}

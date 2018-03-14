@@ -1,0 +1,175 @@
+// Copyright (c) 2015-2018 LG Electronics, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+#ifndef __SETTINGSSERVICES_H__
+#define __SETTINGSSERVICES_H__
+
+#include <assert.h>
+
+#define USE_MEMORY_KEYDESC_KIND
+#define ENABLE_DEBUG_LOG
+#define CHECK_LEGACY_SERVICE_USAGE
+#define LEGACY_LOCK_REQ_SUPPORT
+
+// subscription type
+#define SUBSCRIPTION_TYPE_FOREACHKEY       0
+#define SUBSCRIPTION_TYPE_FORKEYS          1
+#define SUBSCRIPTION_TYPE                  SUBSCRIPTION_TYPE_FORKEYS
+
+// KIND
+#define SETTINGSSERVICE_KIND                    "com.webos.settings:1"
+#define SETTINGSSERVICE_KIND_MAIN               "com.webos.settings.system:1"
+#define SETTINGSSERVICE_KIND_MAIN_VOLATILE      "com.webos.settings.system.volatile:1"
+#define SETTINGSSERVICE_KIND_DEFAULT            "com.webos.settings.default:1"
+#define SETTINGSSERVICE_KIND_COUNTRY            "com.webos.settings.default.country:1"      // WILL NOT BE USED AT ALL.
+#define SETTINGSSERVICE_KIND_DESC               "com.webos.settings.desc:1"
+#define SETTINGSSERVICE_KIND_MAIN_DESC          "com.webos.settings.desc.system:1"
+#define SETTINGSSERVICE_KIND_DFLT_DESC          "com.webos.settings.desc.default:1"
+#define SETTINGSSERVICE_KIND_OVER_DESC          "com.webos.settings.desc.override:1"        // WILL NOT BE USED AT ALL.
+#define SETTINGSSERVICE_KIND_DFLT_CTRY_DESC     "com.webos.settings.desc.default.country:1" // WILL NOT BE USED AT ALL.
+#define SETTINGSSERVICE_KIND_OVER_CTRY_DESC     "com.webos.settings.desc.override.country:1"    // WILL NOT BE USED AT ALL.
+
+#define SETTINGSSERVICE_KIND_PERMISSION_MAIN    "com.webos.settings"
+#define SETTINGSSERVICE_KIND_PERMISSION_DESC    "com.webos.settings.desc"
+
+// App ID
+#define DEFAULT_APP_ID      "com.webos.system"
+#define GLOBAL_APP_ID       ""
+#define UNSPECIFIED_APP_ID  "_UNSPECIFIED_APP_ID_"
+
+// DB8 query
+#define KEYSTR_APPID        "app_id"
+#define KEYSTR_CURRENT_APP  "current_app"
+#define KEYSTR_CATEGORY     "category"
+#define KEYSTR_CONDITION    "condition"
+#define KEYSTR_VTYPE        "vtype"
+#define KEYSTR_VALUES       "values"
+#define KEYSTR_VALUE        "value"
+#define KEYSTR_KEY          "key"
+#define KEYSTR_KEYS         "keys"
+#define KEYSTR_UI           "ui"
+#define KEYSTR_VOLATILE     "volatile"
+#define KEYSTR_DBTYPE       "dbtype"
+#define KEYSTR_CATEGORY     "category"
+#define KEYSTR_DIMENSION    "dimension"
+#define KEYSTR_COUNTRY      "country"
+#define KEYSTR_KIND         "_kind"
+#define KEYSTR_ID           "_id"
+#define KEYSTR_REV          "_rev"
+#define KEYSTR_SYNC         "_sync"
+#define KEYSTR_ARRAYEXT      "arrayExt"
+#define KEYSTR_STORE        "store"
+#define KEYSTR_SETTINGS     "settings"
+
+// DB Type
+#define DBTYPE_GLOBAL       "G" // default value of dbtype
+#define DBTYPE_PERSOURCE    "S" // or means per-app
+#define DBTYPE_MIXED        "M" // mixed means global + perapp
+#define DBTYPE_EXCEPTION    "E" // similar mixed type excluding exceptional app
+
+// other keywords
+#define STR_PERMISSIONS  "permissions"
+
+// Category
+#define X_STR           "x"
+#define DOT_STR         "."
+#define DOLLAR_STR      "$"
+#define CATEGORY_PICTURE    "picture"
+#define CATEGORY_SOUND      "sound"
+
+// Default Values
+#define DEFAULT_COUNTRY_STR     "other"
+#define DEFAULT_COUNTRY_GROUP_STR     "UNDEFINED"
+#define DEFAULT_UI_LANGUAGE "en"
+
+// default DB loading
+#define KINDFILEPATH_BASE                         "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/settings/kinds/"
+#define PERMISSION_FILEPATH_BASE                  "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/settings/permissions/"
+#define KINDFILEPATH_VOLATILE   KINDFILEPATH_BASE "com.webos.settings.system.volatile"
+#define DEFAULT_DIMENSION_FORMAT_FILEPATH         "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/dimensionFormat.json"
+#define DEFAULT_LOADING_FILEPATH                  "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/defaultSettings.json"
+#define DEFAULT_LOADING_FILEPATH_BSON             "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/defaultSettings.bson"
+#define DEFAULT_OVERRIDE_FILEPATH                 "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/override.json"
+#define DEFAULT_DESCRIPTION_FILEPATH              "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/description.json"
+#define DEFAULT_LOADING_DIRECTORY                 "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/settings/defaults"
+#define SUBSCRIBE_STR_KEYDESC(KEY, APPID) ((KEY) + std::string(".") + (APPID) + std::string(".SettingsService_KeyDesc"))
+#define SUBSCRIBE_STR_KEYVALUE(KEY, APPID)     (KEY) + std::string(".") + (APPID)  + std::string(".SettingsService_KeyValue")
+#define SUBSCRIBE_STR_KEY(KEY, APPID, CATEGORY) (!APPID.empty())?((KEY) + std::string(".") + (CATEGORY) + std::string(".") + (APPID)) : ((KEY) + std::string(".") + (CATEGORY))
+
+// Public API Restriction
+#define SETTINGSSERVICE_API_ALLOW_PATH  "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/settingsservice.allow"
+// Core sercises are allowed to read settings from file cache before settingsservice ready
+#define CORE_SERVICE_CONF_PATH          "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/coreService.json"
+
+#define SETTINGSSERVICE_INIT_KEY        "dbInitDone"
+#define SETTINGSSERVICE_DBVER_KEY       "dbVersion"
+#define SETTINGSSERVICE_INIT_CATEGORY   "settingsservice"
+
+// LocaleInfo
+#define SETTINGSSERVICE_LOCALEINFO_PATH "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/localeInfo"
+#define SETTINGSSERVICE_LOCK_PATH       "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/lock"
+#define SETTINGSSERVICE_TIME_PATH       "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/time"
+#define SETTINGSSERVICE_OPTION_PATH     "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/option"
+#define SETTINGSSERVICE_LOCK_CONFPATH   "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/lock.json"
+#define SETTINGSSERVICE_EULA_PATH       "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/eula"
+#define SETTINGSSERVICE_CHANNEL_PATH    "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/channel"
+#define SETTINGSSERVICE_GENERAL_PATH    "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/general"
+#define SETTINGSSERVICE_CAPTION_PATH    "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/caption"
+#define SETTINGSSERVICE_NETWORK_PATH    "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/network"
+#define SETTINGSSERVICE_HOTELMODE_PATH  "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/hotelMode"
+#define SETTINGSSERVICE_TWINTV_PATH     "@WEBOS_INSTALL_SYSMGR_LOCALSTATEDIR@/preferences/twinTv"
+#define SETTINGSSERVICE_CONF_FILE       "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/settingsservice.conf"
+#define SETTINGSSERVICE_PLATFORM_FILE   "@WEBOS_INSTALL_WEBOS_SYSCONFDIR@/settingsservice-platform.conf"
+
+// KIND type
+typedef enum {
+    KINDTYPE_BASE,
+    KINDTYPE_VOLATILE,
+    KINDTYPE_DEFAULT
+} tKindType;
+
+#ifdef ENABLE_DEBUG_LOG
+#define DB8_luna_call(handle, uri, params, ...) \
+    LSCallOneReply(handle, uri, params, ##__VA_ARGS__); \
+    SSERVICELOG_DEBUG("%s: Db8 call %s %s", __FUNCTION__, uri, params)
+#else
+#define DB8_luna_call(handle, uri, params, ...) \
+    LSCallOneReply(handle, uri, params, ##__VA_ARGS__)
+#endif
+
+#if !defined(RELEASE_BUILD)
+//
+// Those will be included ONLY IF it is debug build.
+//
+//    REQUIRE: Method-level check on method entry.
+//    ASSERT:  A check at whatever point it is called.
+//    ENSURE:  Method-level check on method exit.
+//
+#define PRF_REQUIRE(x)      do { if (!(x)) { SSERVICELOG_DEBUG("REQUIRE ERROR: %s at %s:%d.", #x, __func__, __LINE__); assert(x); } } while(0)
+#define PRF_ASSERT       assert
+#define PRF_ENSURE(x)       do { if (!(x)) { SSERVICELOG_DEBUG("ENSURE ERROR: %s at %s:%d.", #x, __func__, __LINE__); } } while(0)
+#define PRF_DEBUG(...)      do { SSERVICELOG_DEBUG("[%s:%d] ", __func__, __LINE__); SSERVICELOG_DEBUG(__VA_ARGS__); } while (0)
+#define PRF_ERROR(...)      do { SSERVICELOG_DEBUG("[%s:%d] ", __func__, __LINE__); SSERVICELOG_DEBUG(__VA_ARGS__); } while (0)
+#define _PEL                    do { SSERVICELOG_DEBUG("[%s:%d]", __func__, __LINE__); } while(0)
+#else
+#define PRF_REQUIRE(x)      do { if (!(x)) { ; } } while(0)
+#define PRF_ASSERT(x)       do { if (!(x)) { ; } } while(0)
+#define PRF_ENSURE(x)       do { if (!(x)) { ; } } while(0)
+#define PRF_DEBUG
+#define PRF_ERROR
+#endif
+
+#endif

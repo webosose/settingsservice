@@ -1,0 +1,19 @@
+{
+  "id":"com.webos.settings.system:1",
+  "owner":"com.webos.settingsservice",
+  "extends":["com.webos.settings:1"],
+  "schema":{
+    "type":"object",
+    "properties":{
+      "app_id":{ "type":"string", "optional":false, "description":"Source ID, If setting is global, this is set by com.webos.system" },
+      "category":{ "type":"string", "optional":false, "description":"Categry name" },
+      "value":{ "type":"object", "optional":false, "description":"settings data is here"}
+    }
+  },
+  "indexes":
+  [
+      {"name": "categorysearch", "props": [{"name":"category"}, {"name":"app_id"}, {"name":"volatile", "default":false}] },
+      {"name": "appidsearch", "props": [{"name":"app_id"}, {"name":"volatile", "default":false}] }
+  ],
+  "sync": true
+}

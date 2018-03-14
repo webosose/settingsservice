@@ -1,0 +1,14 @@
+{
+    "role": {
+        "exeName":"@WEBOS_INSTALL_SBINDIR@/SettingsService",
+        "type": "regular",
+        "allowedNames": ["com.webos.settingsservice"]
+    },
+    "permissions": [
+        {
+            "service":"com.webos.settingsservice",
+            "inbound":["*"],
+            "outbound":["*"]
+        }
+    ]
+}

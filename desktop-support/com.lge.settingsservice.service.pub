@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.lge.settingsservice
+Exec=/usr/lib/luna/SettingsService
+Type=static

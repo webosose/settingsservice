@@ -1,0 +1,15 @@
+{
+  "id":"com.webos.settings.desc.default:1",
+  "owner":"com.webos.settingsservice",
+  "extends":["com.webos.settings.desc:1"],
+  "indexes":
+  [
+      {"name": "keysearchCountry", "props": [{"name": "key"}, {"name":"country", "tokenize":"all", "default":"none"}] },
+      {"name": "keyappidsearchCountry", "props": [{"name": "key"}, {"name": "app_id", "default":""}, {"name":"country", "tokenize":"all", "default":"none"}] },
+      {"name": "cateogrysearch", "props": [{"name": "category"}] },
+      {"name": "cateogrykeysearch", "props": [{"name": "key"}, {"name": "category"}] },
+      {"name": "volatilesearch", "props": [{"name": "volatile"}] },
+      {"name": "countrysearch", "props": [{"name": "country", "tokenize":"all", "default":"none"}] }
+  ],
+  "sync": true
+}

@@ -1,0 +1,16 @@
+{
+  "id":"com.webos.settings.desc.override.country:1",
+  "owner":"com.webos.settingsservice",
+  "extends":["com.webos.settings.desc.override:1"],
+  "schema":{
+    "type":"object",
+    "properties":{
+      "country":{ "type":"string", "optional":false, "description":"Country code for country-variation" }
+    }
+  },
+  "indexes": [
+    {"name": "categorysearch", "props": [{"name":"category"}, {"name":"country", "tokenize":"all"}] },
+    {"name": "countrysearch", "props": [{"name":"country", "tokenize":"all"}]}
+  ],
+  "sync": true
+}

@@ -1,0 +1,5 @@
+{
+    "id": "com.lge.settingsservice",
+    "preBackup": "backup/preBackup",
+    "postRestore": "backup/postRestore"
+}

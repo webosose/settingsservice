@@ -1,0 +1,17 @@
+{
+  "id":"com.webos.settings.system.volatile:1",
+  "owner":"com.webos.settingsservice",
+  "extends":["com.webos.settings.system:1"],
+  "schema":{
+    "type":"object",
+    "properties":{
+      "volatile":{"type":"boolean", "optional":false,  "description":"Always be true"}
+    }
+  },
+  "indexes":
+  [
+      {"name": "categorysearch", "props": [{"name":"category"}, {"name":"app_id"}] },
+      {"name": "appidsearch", "props": [{"name":"app_id"}] }
+  ],
+  "sync": true
+}

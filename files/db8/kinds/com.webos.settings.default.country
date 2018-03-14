@@ -1,0 +1,17 @@
+{
+  "id":"com.webos.settings.default.country:1",
+  "owner":"com.webos.settingsservice",
+  "extends":["com.webos.settings.default:1"],
+  "schema":{
+    "type":"object",
+    "properties":{
+      "country":{ "type":"string", "optional":false, "description":"country code" }
+    }
+  },
+  "indexes":
+  [
+      {"name": "categorysearch", "props": [{"name":"category"}, {"name":"app_id"}, {"name":"country", "tokenize":"all"}] },
+      {"name": "countrysearch", "props": [{"name":"country", "tokenize":"all"}]}
+  ],
+  "sync": true
+}

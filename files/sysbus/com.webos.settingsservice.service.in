@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.webos.service.settings;com.webos.settingsservice;com.lge.settingsservice
+Exec=@WEBOS_INSTALL_SBINDIR@/SettingsService
+Type=static

@@ -1,0 +1,11 @@
+{
+    "com.webos.settingsservice": [
+        "database", "database.internal", "applications.internal"
+    ],
+    "com.lge.settingsservice": [
+        "database", "database.internal", "applications.internal"
+    ],
+    "com.webos.service.settings": [
+        "database", "database.internal", "applications.internal"
+    ]
+}

@@ -1,0 +1,12 @@
+{
+  "id":"com.webos.settings:1",
+  "owner":"com.webos.settingsservice",
+    "schema":{
+      "type":"object",
+      "properties":{
+        "key":{ "type":"string", "optional":true, "description":"KEY string of the setting" },
+        "contextualItem":{ "type":"boolean", "optional":true, "description":"This indecate this will be shown on contextual setting UI" }
+      }
+    },
+    "sync": true
+}

@@ -1,0 +1,13 @@
+{
+  "id":"com.webos.settings.desc.system:1",
+  "owner":"com.webos.settingsservice",
+  "extends":["com.webos.settings.desc:1"],
+  "indexes":
+  [
+      {"name": "appidkeysearch", "props": [{"name": "key"}, {"name": "app_id","default":""}] },
+      {"name": "cateogrysearch", "props": [{"name": "category"}] },
+      {"name": "appidcateogrykeysearch", "props": [{"name": "key"}, {"name": "category"}, {"name": "app_id","default":""}] },
+      {"name": "volatilesearch", "props": [{"name": "volatile"}] }
+  ],
+  "sync": true
+}
