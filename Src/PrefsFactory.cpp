@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2019 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -409,12 +409,12 @@ void PrefsFactory::postPrefChangeCategory(LSHandle *lsHandle, const std::string 
         std::string firstKey;
 
         if(result) {
-            replyRoot.put("settings", subscriptionValue.second);
+            pbnjson::JValue resultSettingsValue = subscriptionValue.second;
+            replyRoot.put("settings", resultSettingsValue);
             // store first key for subscription
-            for (pbnjson::JValue::KeyValue it : subscriptionValue.second.children()) {
-                firstKey = it.first.asString();
-                break;
-            }
+            pbnjson::JValue::ObjectConstIterator it = resultSettingsValue.children().begin();
+            pbnjson::JValue::KeyValue firstKeyValuePair = *it;
+            firstKey = firstKeyValuePair.first.asString();
         }
         else {
             pbnjson::JArray errorKeyArray;
@@ -679,7 +679,12 @@ PrefsFactory::PublicAPIGuard::PublicAPIGuard()
     std::ifstream ifs;
     ifs.open(SETTINGSSERVICE_API_ALLOW_PATH, std::ios_base::in);
     if (!ifs.fail()) {
-        std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+        std::string content;
+        try{
+            content.assign((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+        } catch (const std::length_error& e) {
+            SSERVICELOG_DEBUG("Exception while reading file: %s, exception: %s", SETTINGSSERVICE_API_ALLOW_PATH, e.what());
+        }
         pbnjson::JValue root = pbnjson::JDomParser::fromString(content);
         if (root.isArray()) {
             for (pbnjson::JValue idx : root.items()) {

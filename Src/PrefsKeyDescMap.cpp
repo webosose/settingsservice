@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2019 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -438,7 +438,7 @@ static pbnjson::JValue merge_desc_arrayExt(pbnjson::JValue barr, pbnjson::JValue
             pbnjson::JValue ovalue = oitem["value"];
             if (!ovalue.isString()) {
                 SSERVICELOG_WARNING(MSGID_KEYDESC_JSON_TYPE_ERR, 1,
-                        PMLOGJSON("reason", oitem.isNull() ? "{}" : oitem.stringify().c_str()), "incorrect value in override");
+                        PMLOGJSON("reason", ovalue.isNull() ? "{}" : ovalue.stringify().c_str()), "incorrect value in override");
                 continue; /* override fail */
             }
 
