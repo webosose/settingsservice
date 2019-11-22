@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2019 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,6 +53,9 @@ class PrefsDb8Init {
         };
 
     public:
+        PrefsDb8Init(const PrefsDb8Init&) = delete;
+        PrefsDb8Init& operator=(const PrefsDb8Init&) = delete;
+
         static PrefsDb8Init *instance();
         void setServiceHandle(LSHandle* serviceHandle) { m_serviceHandlePrivate = serviceHandle; };
         bool initKind();
