@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -177,7 +177,7 @@ private:
         const std::string& getKey() const { return m_key; }
         const std::string& getDimensionJson() const { return m_dim_json; }
         const std::string& getAppId() const { return m_appId; }
-        const Type getType() const { return m_type; }
+        Type getType() const { return m_type; }
 
     private:
         Element();

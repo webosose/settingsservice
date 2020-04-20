@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -689,12 +689,12 @@ bool PrefsDb8Del::handleSettingsRecord(LSHandle *a_lsHandle, pbnjson::JValue a_r
     return success;
 }
 
-bool PrefsDb8Del::checkSettingsRecordDirty(std::pair < int, SettingsRecord > item)
+bool PrefsDb8Del::checkSettingsRecordDirty(const std::pair < int, SettingsRecord >& item)
 {
     return item.second.is_dirty();
 }
 
-bool PrefsDb8Del::checkSettingsRecordDirtyOrVolatile(std::pair < int, SettingsRecord > item)
+bool PrefsDb8Del::checkSettingsRecordDirtyOrVolatile(const std::pair < int, SettingsRecord >& item)
 {
     return item.second.is_dirty() || item.second.isVolatile();
 }

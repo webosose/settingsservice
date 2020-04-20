@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2020 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -157,8 +157,8 @@ class PrefsDb8Del : public PrefsRefCounted, public PrefsFinalize {
     bool sendRequestResetAll(LSHandle * lsHandle);
 
     void setGlobalAndPerAppKeys(const std::set < std::string >& globalKeys, const std::set < std::string >& PerAppKeys);
-    static bool checkSettingsRecordDirty(std::pair < int, SettingsRecord > item);
-    static bool checkSettingsRecordDirtyOrVolatile(std::pair < int, SettingsRecord > item);
+    static bool checkSettingsRecordDirty(const std::pair < int, SettingsRecord >& item);
+    static bool checkSettingsRecordDirtyOrVolatile(const std::pair < int, SettingsRecord >& item);
     void setTaskInfo(MethodCallInfo* p) { m_taskInfo = p; };
 };
 
