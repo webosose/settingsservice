@@ -1,4 +1,4 @@
 Open Source Software Package:
-- name: webOSOSE-settingsservice
-  source: https://github.com/webosose/settingsservice
+- name: webOSOSE
+  source: https://github.com/webosose
   license: Apache-2.0
