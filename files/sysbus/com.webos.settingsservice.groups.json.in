@@ -1,0 +1,7 @@
+{
+    "allowedNames" : [],
+    "settings.management" : ["oem"],
+    "settings.devutility" : ["oem"],
+    "settings.query" : ["dev"]
+}
+
