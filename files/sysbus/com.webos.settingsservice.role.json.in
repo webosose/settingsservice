@@ -1,6 +1,6 @@
 {
     "exeName":"@WEBOS_INSTALL_SBINDIR@/SettingsService",
-    "trustLevel" : ["oem"],
+    "trustLevel" : "oem",
     "type": "regular",
     "allowedNames": ["com.webos.settingsservice", "com.lge.settingsservice", "com.webos.service.settings"],
     "permissions": [
