@@ -1,11 +1,11 @@
 {
     "com.webos.settingsservice": [
-        "database.operation", "database.management","luna.internal","applicationmanager.query"
+        "database.management", "database.operation", "application.operation", "luna.internal"
     ],
     "com.lge.settingsservice": [
-        "database.operation", "database.management", "luna.internal","applicationmanager.query"
+        "database.management", "database.operation", "application.operation", "luna.internal"
     ],
     "com.webos.service.settings": [
-        "database.operation", "database.management", "luna.internal","applicationmanager.query"
+        "database.management", "database.operation", "application.operation", "luna.internal"
     ]
 }
