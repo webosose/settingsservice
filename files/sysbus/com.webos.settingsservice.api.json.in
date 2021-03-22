@@ -30,6 +30,14 @@
         "com.webos.service.settings/setSystemSettingValues",
         "com.webos.service.settings/setSystemSettings"
     ],
+    "settings.devutility" : [
+        "com.lge.settingsservice/internal/getCurrentSubscriptions",
+        "com.lge.settingsservice/internal/instrument",
+        "com.webos.settingsservice/internal/getCurrentSubscriptions",
+        "com.webos.settingsservice/internal/instrument",
+        "com.webos.service.settings/internal/getCurrentSubscriptions",
+        "com.webos.service.settings/internal/instrument"
+    ],
     "settings.query": [
         "com.lge.settingsservice/getCurrentSettings",
         "com.lge.settingsservice/getSystemSettingDesc",

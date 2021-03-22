@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2021 LG Electronics, Inc.
+// Copyright (c) 2013-2019 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -124,6 +124,22 @@ void PrefsFactory::setServiceHandle(LSHandle* serviceHandle)
     result = LSCategorySetData(serviceHandle,  "/", this, &lsError);
     if (!result) {
         SSERVICELOG_WARNING(MSGID_LSERROR_MSG, 2, PMLOGKS("Function",lsError.func), PMLOGKS("Error",lsError.message), "Set user data");
+        LSErrorFree(&lsError);
+        return;
+    }
+
+    result = LSRegisterCategory(serviceHandle, "/internal", PrefsInternalCategory::getMethods(), NULL, NULL, &lsError);
+    if (!result) {
+        SSERVICELOG_WARNING(MSGID_LSERROR_MSG, 2,
+            PMLOGKS("Function",lsError.func),
+            PMLOGKS("Error",lsError.message),
+            "Register service with internal category");
+        LSErrorFree(&lsError);
+        return;
+    }
+    result = LSCategorySetData(serviceHandle,  "/internal", this, &lsError);
+    if (!result) {
+        SSERVICELOG_WARNING(MSGID_LSERROR_MSG, 2, PMLOGKS("Function",lsError.func), PMLOGKS("Error",lsError.message), "Set user data with internal category");
         LSErrorFree(&lsError);
         return;
     }

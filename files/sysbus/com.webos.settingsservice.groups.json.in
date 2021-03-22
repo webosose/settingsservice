@@ -1,6 +1,7 @@
 {
     "allowedNames" : ["com.webos.settingsservice", "com.lge.settingsservice", "com.webos.service.settings"],
     "settings.management" : ["oem"],
+    "settings.devutility" : ["oem"],
     "settings.query" : ["dev"]
 }
 

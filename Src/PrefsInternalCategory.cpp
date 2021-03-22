@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2021 LG Electronics, Inc.
+// Copyright (c) 2015-2018 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,25 @@ void LSMessageReplyWrapper(LSHandle* handle, LSMessage* message, const char *msg
     if (!retVal) {
         LSErrorFree(&lsError);
     }
+}
+
+bool cbInternalCategoryGeneralCallback(LSHandle* lsHandle, LSMessage* message, void* context);
+
+LSMethod s_methods_internal[] = {
+    {INSTRUMENT_STR, cbInternalCategoryGeneralCallback},
+    {GETCURRENTSUBSCRIPTIONS_STR, cbInternalCategoryGeneralCallback},
+    {0, 0}
+};
+
+bool cbInternalCategoryGeneralCallback(LSHandle* lsHandle, LSMessage* message, void* context)
+{
+    PrefsFactory *prefsFactory = static_cast<PrefsFactory*>(context);
+
+    if (!prefsFactory->getTaskManager().push(METHODID_INTERNAL_GENERAL, lsHandle, message)) {
+        LSMessageReplyWrapper(lsHandle, message, "{\"returnValue\":false, \"errorText\":\"Error!! to insert request for internal category to task que\"}");
+    }
+
+    return true;
 }
 
 bool doInternalCategoryGeneralMethod(LSHandle* handle, LSMessage* message, MethodCallInfo* taskInfo)
@@ -235,3 +254,7 @@ void PrefsInternalCategory::handleRequest(LSHandle* handle, LSMessage* message)
     unref();
 }
 
+LSMethod* PrefsInternalCategory::getMethods()
+{
+    return s_methods_internal;
+}
