@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2021 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #include "Utils.h"
 #include "Logging.h"
 
+static std::map<std::string, Utils::Instrument::SubscriptionDumpItem> g_subscriptionMap;
 namespace Utils {
     bool readFile(const std::string& filePath, std::string& res) {
         if (filePath.empty())
@@ -285,8 +286,23 @@ namespace Utils {
         return false;
     }
 
+    void subscriptionRemove(LSHandle *sh, LSMessage *reply)
+    {
+        if(g_subscriptionMap.count(LSMessageGetSender(reply)))
+        {
+            g_subscriptionMap.erase(LSMessageGetSender(reply));
+        }
+    }
+
     bool subscriptionAdd(LSHandle *a_sh, const char *a_key, LSMessage *a_message)
     {
+        pbnjson::JValue parsed = pbnjson::JDomParser::fromString(LSMessageGetPayload(a_message));
+        std::string payload = pbnjson::JGenerator::serialize(parsed, pbnjson::JSchemaFragment("{}"));
+        Instrument::SubscriptionDumpItem subscriber;
+        subscriber.message = payload;
+        subscriber.method = LSMessageGetMethod(a_message);
+        subscriber.sender =LSMessageGetSenderServiceName(a_message);
+        g_subscriptionMap[LSMessageGetSender(a_message)] = subscriber;
         LSError lsError;
         LSErrorInit(&lsError);
 
@@ -613,6 +629,10 @@ namespace Utils {
             return m_errorText;
         }
 
+        void CurrentSubscriptions::getLocalsubscriptionMap()
+        {
+            m_subscriptionMap = g_subscriptionMap;
+        }
         void CurrentSubscriptions::request (requestCallBack cb)
         {
             m_requestCallBack   = cb;

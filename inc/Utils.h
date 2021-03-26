@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2021 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -78,6 +78,7 @@ namespace Utils {
 #define ERRMASK_POSTSUBUPDATE_PRIVATE	2
     bool processSubscription(LSHandle * serviceHandle, LSMessage * message, const std::string & key);
     bool subscriptionAdd(LSHandle *a_sh, const char *a_key, LSMessage *a_message);
+    void subscriptionRemove(LSHandle *sh, LSMessage *reply);
 
 // Build an std::string using printf-style formatting
     std::string string_printf(const char *format, ...) G_GNUC_PRINTF(1, 2);
@@ -112,6 +113,7 @@ namespace Utils {
                 bool                   error()           const {return !errorText().empty();}
                 std::string            errorText()       const;
                 const std::string&     errorContext()    const {return m_errorContext;}
+                void getLocalsubscriptionMap();
 
             private: // method members
                 ~CurrentSubscriptions();

@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2018 LG Electronics, Inc.
+// Copyright (c) 2015-2021 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -193,36 +193,24 @@ void PrefsInternalCategory::handleMethodInstrument()
 void PrefsInternalCategory::handleMethodGetCurrentSubscriptions()
 {
     auto subscriptions = new Utils::Instrument::CurrentSubscriptions();
+    subscriptions->getLocalsubscriptionMap();
     ref();
-    subscriptions->request([this, subscriptions]
-    {
-        const bool isSuccess = !subscriptions->error();
-        pbnjson::JObject jsonRoot;
-        jsonRoot.put("returnValue", isSuccess);
-        if (isSuccess)
-        {
-            pbnjson::JArray jsonItemArray;
-            for (auto it : subscriptions->subscriptionMap())
-            {
-                pbnjson::JObject jsonItem;
-                jsonItem.put("sender",  it.second.sender);
-                jsonItem.put("method",  it.second.method);
-                jsonItem.put("message", it.second.message);
-                jsonItemArray.append(jsonItem);
-            }
-            jsonRoot.put("subscriptions", jsonItemArray);
+    pbnjson::JObject jsonRoot;
+    jsonRoot.put("returnValue", true);
+    pbnjson::JArray jsonItemArray;
 
-        }
-        else
-        {
-            jsonRoot.put("errorText",        subscriptions->errorText());
-            jsonRoot.put("errorContext",     subscriptions->errorContext());
-            jsonRoot.put("instrumentStatus", "stopped");
-        }
-        LSMessageReplyWrapper(m_handle, m_message, jsonRoot.stringify().c_str());
-        unref();
-        subscriptions->unref();
-    });
+    for (auto it : subscriptions->subscriptionMap())
+    {
+        pbnjson::JObject jsonItem;
+        jsonItem.put("sender",  it.second.sender);
+        jsonItem.put("method",  it.second.method);
+        jsonItem.put("message", it.second.message);
+        jsonItemArray.append(jsonItem);
+    }
+    jsonRoot.put("subscriptions", jsonItemArray);
+    LSMessageReplyWrapper(m_handle, m_message, jsonRoot.stringify().c_str());
+    unref();
+    subscriptions->unref();
 }
 
 /**
