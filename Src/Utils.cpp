@@ -424,22 +424,20 @@ namespace Utils {
                                        const std::string& errorContext)> callBack)
         {
             auto subscriptions = new CurrentSubscriptions();
+            subscriptions->getLocalsubscriptionMap();
             if (Active == g_DumpMode)
             {
                 callBack(subscriptions->errorText(), subscriptions->errorContext());
                 subscriptions->unref();
                 return;
             }
-            subscriptions->request([subscriptions, callBack]
-            {
-                if (!subscriptions->error())
-                {
-                    writeSubscriptionDumpItem(subscriptions->subscriptionMap());
-                    g_DumpMode = Active;
-                }
-                callBack(subscriptions->errorText(), subscriptions->errorContext());
-                subscriptions->unref();
-            });
+
+            writeSubscriptionDumpItem(subscriptions->subscriptionMap());
+            g_DumpMode = Active;
+
+            callBack(subscriptions->errorText(), subscriptions->errorContext());
+            subscriptions->unref();
+
         }
 
         void stop()
