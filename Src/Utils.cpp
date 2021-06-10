@@ -299,10 +299,14 @@ namespace Utils {
         pbnjson::JValue parsed = pbnjson::JDomParser::fromString(LSMessageGetPayload(a_message));
         std::string payload = pbnjson::JGenerator::serialize(parsed, pbnjson::JSchemaFragment("{}"));
         Instrument::SubscriptionDumpItem subscriber;
+
         subscriber.message = payload;
         subscriber.method = LSMessageGetMethod(a_message);
-        subscriber.sender =LSMessageGetSenderServiceName(a_message);
+        if(LSMessageGetSenderServiceName(a_message)) {
+            subscriber.sender = LSMessageGetSenderServiceName(a_message);
+        }
         g_subscriptionMap[LSMessageGetSender(a_message)] = subscriber;
+
         LSError lsError;
         LSErrorInit(&lsError);
 
