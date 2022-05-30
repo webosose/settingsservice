@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2019 LG Electronics, Inc.
+// Copyright (c) 2013-2022 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -4434,7 +4434,9 @@ bool PrefsKeyDescMap::cbDimensionValuesDepD1Request(LSHandle * lsHandle, LSMessa
                 DimKeyValueMap::iterator itKeyValueMap = replyInfo->m_dimKeyValueMap.find(it);
                 if(itKeyValueMap != replyInfo->m_dimKeyValueMap.end()) {
                     itKeyValueMap->second = keyObj.asString();
-                    remainKeyList.erase(it);
+                    auto itr = remainKeyList.find(it);
+                    if (itr != remainKeyList.end())
+                        remainKeyList.erase(itr);
                 }
             }
         }
