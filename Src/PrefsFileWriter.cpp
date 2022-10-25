@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2018 LG Electronics, Inc.
+// Copyright (c) 2014-2022 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -87,12 +87,12 @@ PrefsFileWriter::PrefsFileWriter()
     if(!parseRuleSchema(prefsFileWriterRule, ruleSchemas))
         return;
 
-    for(auto item: ruleSchemas)
+    for(const auto& item: ruleSchemas)
     {
         PrefsFileWriterRule r;
         r.init();
 
-        for(auto rule : item.rules)
+        for(const auto& rule : item.rules)
         {
             r.m_keyCategoryPairs.push_back(std::pair<std::string, std::string>(rule.key.c_str(), rule.category.c_str()));
             this->m_categories.insert(rule.category);
