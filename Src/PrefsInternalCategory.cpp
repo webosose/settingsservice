@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2021 LG Electronics, Inc.
+// Copyright (c) 2015-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -224,7 +224,15 @@ void PrefsInternalCategory::handleRequest(LSHandle* handle, LSMessage* message)
     m_handle = handle;
     m_message = message;
 
-    std::string method = LSMessageGetMethod(message);
+    auto methodName = LSMessageGetMethod(message);
+    if (!methodName) {
+        LSMessageReplyWrapper(handle, message,
+                "{\"returnValue\":false, \"errorText\":\"Unsupported method\"}");
+        unref();
+        return;
+    }
+
+    std::string method = methodName;
 
     if (INSTRUMENT_STR == method) {
         handleMethodInstrument();
@@ -238,7 +246,8 @@ void PrefsInternalCategory::handleRequest(LSHandle* handle, LSMessage* message)
         return;
     }
 
-    LSMessageReplyWrapper(handle, message, "{\"returnValue\":false, \"errorText\":\"Unsupported method\"}");
+    LSMessageReplyWrapper(handle, message,
+            "{\"returnValue\":false, \"errorText\":\"Unsupported method\"}");
     unref();
 }
 

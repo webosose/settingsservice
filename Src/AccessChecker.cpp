@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2018 LG Electronics, Inc.
+// Copyright (c) 2015-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,18 +55,24 @@ AccessChecker::Impl::processReply(LSHandle* handle, LSMessage* reply, void* ctx)
 {
     std::unique_ptr<ParamsGroup> params(static_cast<ParamsGroup*>(ctx));
 
-    pbnjson::JValue parsed = pbnjson::JDomParser::fromString(LSMessageGetPayload(reply));
+    do {
+        auto payload = LSMessageGetPayload(reply);
+        if (!payload) {
+            params->m_callback(params->m_message, false);
+            break;
+        }
 
-    if (parsed["returnValue"].asBool())
-    {
-        bool allowed = parsed["allowed"].asBool();
-        params->m_callback(params->m_message, allowed);
-        params->m_impl->m_result_cache[params->m_requester] = allowed;
+        pbnjson::JValue parsed = pbnjson::JDomParser::fromString(payload);
 
-    } else
-    {
-        params->m_callback(params->m_message, false);
-    }
+        if (parsed["returnValue"].asBool()) {
+            bool allowed = parsed["allowed"].asBool();
+            params->m_callback(params->m_message, allowed);
+            params->m_impl->m_result_cache[params->m_requester] = allowed;
+
+        } else {
+            params->m_callback(params->m_message, false);
+        }
+    } while (false);
 
     LSMessageUnref(params->m_message);
     return true;

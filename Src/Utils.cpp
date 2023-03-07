@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2021 LG Electronics, Inc.
+// Copyright (c) 2013-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -296,14 +296,17 @@ namespace Utils {
 
     bool subscriptionAdd(LSHandle *a_sh, const char *a_key, LSMessage *a_message)
     {
-        pbnjson::JValue parsed = pbnjson::JDomParser::fromString(LSMessageGetPayload(a_message));
+        auto payloadPtr = LSMessageGetPayload(a_message);
+        pbnjson::JValue parsed = pbnjson::JDomParser::fromString(
+                payloadPtr ? payloadPtr : "{}");
         std::string payload = pbnjson::JGenerator::serialize(parsed, pbnjson::JSchemaFragment("{}"));
         Instrument::SubscriptionDumpItem subscriber;
 
         subscriber.message = payload;
-        subscriber.method = LSMessageGetMethod(a_message);
-        if(LSMessageGetSenderServiceName(a_message)) {
-            subscriber.sender = LSMessageGetSenderServiceName(a_message);
+        auto lsMethod = LSMessageGetMethod(a_message);
+        subscriber.method = lsMethod ? lsMethod : "";
+        if(auto sender = LSMessageGetSenderServiceName(a_message)) {
+            subscriber.sender = sender;
         }
         g_subscriptionMap[LSMessageGetSender(a_message)] = subscriber;
 
@@ -351,14 +354,15 @@ namespace Utils {
         return str;
     }
 
-    std::string & append_format(std::string & str, const char *format, ...) {
+    std::string& append_format(std::string &str, const char *format, ...) {
         if (format == 0)
             return str;
         va_list args;
         va_start(args, format);
         char stackBuffer[1024];
-        int result = vsnprintf(stackBuffer, G_N_ELEMENTS(stackBuffer), format, args);
-        if (result > -1 && result < (int)G_N_ELEMENTS(stackBuffer)) {   // stack buffer was sufficiently large. Common case with no temporary dynamic buffer.
+        int result = vsnprintf(stackBuffer, G_N_ELEMENTS(stackBuffer), format,
+                args);
+        if (result > -1 && result < (int) G_N_ELEMENTS(stackBuffer)) { // stack buffer was sufficiently large. Common case with no temporary dynamic buffer.
             va_end(args);
             str.append(stackBuffer, result);
             return str;
@@ -368,15 +372,18 @@ namespace Utils {
         char *buffer = 0;
         do {
             if (buffer) {
-                delete[]buffer;
+                delete[] buffer;
                 length *= 3;
             }
             buffer = new char[length];
             result = vsnprintf(buffer, length, format, args);
         } while (result == -1 && result < length);
         va_end(args);
-        str.append(buffer, result);
-        delete[]buffer;
+        if (buffer && (result > 0))
+            str.append(buffer, result);
+
+        if (buffer)
+            delete[] buffer;
         return str;
     }
 
@@ -502,7 +509,10 @@ namespace Utils {
             struct timeval curTime;
             gettimeofday(&curTime, NULL);
             char timebuffer [80] = "";
-            strftime(timebuffer, sizeof(timebuffer), INSTRUMENT_TIME_FORMAT, localtime(&curTime.tv_sec));
+            auto timePtr = localtime(&curTime.tv_sec);
+            if (timePtr)
+                strftime(timebuffer, sizeof(timebuffer), INSTRUMENT_TIME_FORMAT,
+                        timePtr);
             char currentTime[84] = "";
             snprintf(currentTime, sizeof(currentTime), "%s.%03ld", timebuffer, curTime.tv_usec / 1000);
 
@@ -626,8 +636,8 @@ namespace Utils {
         std::string CurrentSubscriptions::errorText() const
         {
             if (m_errorText.empty() && LSErrorIsSet(const_cast<LSError*>(&m_lsError)))
-                return "LUNASERVICE ERROR " + std::to_string(m_lsError.error_code) + ": "
-                                            + m_lsError.message;
+                return "LUNASERVICE ERROR " + std::to_string(m_lsError.error_code)
+                        + ": " + (m_lsError.message ? m_lsError.message : "");
             return m_errorText;
         }
 
@@ -673,15 +683,16 @@ namespace Utils {
         {
             auto subscriptions = static_cast<CurrentSubscriptions*>(context);
             subscriptions->m_errorContext = __PRETTY_FUNCTION__;
-            std::string payload = LSMessageGetPayload(message);
-            if (parseSubscriptionDumpItem(payload, subscriptions->m_subscriptionMap))
-            {
+            auto payloadStr = LSMessageGetPayload(message);
+            std::string payload = payloadStr ? payloadStr : "{}";
+
+            if (payloadStr
+                    && (parseSubscriptionDumpItem(payload,
+                            subscriptions->m_subscriptionMap))) {
                 subscriptions->requestNext();
-            }
-            else
-            {
+            } else {
                 subscriptions->m_errorText = "cannot parse result: "
-                                           + subscriptions->m_requestURI + " '{}' --> " + payload;
+                        + subscriptions->m_requestURI + " '{}' --> " + payload;
                 subscriptions->m_requestCallBack();
             }
             return true;

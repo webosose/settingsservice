@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ bool PrefsDb8SetValues::sendCheckUsedKeyRequest(LSHandle* lsHandle, const char* 
     pbnjson::JValue replyRootItem1(pbnjson::Object());
     bool result;
 
-    m_targetKind = targetKind;
+    m_targetKind = targetKind ? targetKind : "";
 
     selectKey = "value." + m_key;
     PrefsKeyDescMap::instance()->getCategory(m_key, category);

@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2020 LG Electronics, Inc.
+// Copyright (c) 2013-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1034,17 +1034,19 @@ void PrefsDb8Del::finalize(void)
 
 std::string PrefsDb8Del::getSettingValue(const char *a_key)
 {
-    std::map < int, SettingsRecord >::iterator it_settings;
+    if(a_key) {
+        std::map < int, SettingsRecord >::iterator it_settings;
 
-    /* m_currentSettings can include two item if volatile settings are included,
-       but actually, there is no volatile data in default kind */
+        /* m_currentSettings can include two item if volatile settings are included,
+           but actually, there is no volatile data in default kind */
 
-    for (const std::pair< int, SettingsRecord >& it_settings : m_currentSettings) {
-        pbnjson::JValue tmpObj = it_settings.second.getValuesObj();
-        for(pbnjson::JValue::KeyValue it_obj : tmpObj.children()) {
-            std::string key = it_obj.first.asString();
-            if (key == a_key && it_obj.second.isString() ) {
-                return it_obj.second.asString();
+        for (const std::pair< int, SettingsRecord >& it_settings : m_currentSettings) {
+            pbnjson::JValue tmpObj = it_settings.second.getValuesObj();
+            for(pbnjson::JValue::KeyValue it_obj : tmpObj.children()) {
+                std::string key = it_obj.first.asString();
+                if ((key == a_key) && it_obj.second.isString() ) {
+                    return it_obj.second.asString();
+                }
             }
         }
     }

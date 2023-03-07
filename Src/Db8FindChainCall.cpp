@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -166,22 +166,20 @@ bool Db8FindChainCall::cbDb8FindCall(LSHandle *a_handle, LSMessage *a_message, v
         thiz_class->m_results.push_back(root);
     } while (false);
 
-    if (false == success || true == completed)
-    {
+    if (!success || completed) {
         // Call callback here even though it's failure.
-        //
-        if (thiz_class->m_callback)
-        {
-            SSERVICELOG_DEBUG("%s : completed: %d, success: %d", __func__, completed, success);
-            thiz_class->m_callback(thiz_class->m_thiz_class, thiz_class->m_user_data, thiz_class->m_results);
+        if (thiz_class && thiz_class->m_callback) {
+            SSERVICELOG_DEBUG("%s : completed: %d, success: %d", __func__,
+                    completed, success);
+            thiz_class->m_callback(thiz_class->m_thiz_class,
+                    thiz_class->m_user_data, thiz_class->m_results);
         }
-    }
-    else
-    {
-        SSERVICELOG_DEBUG("%s : completed: %d, success: %d", __func__, completed, success);
+    } else {
+        SSERVICELOG_DEBUG("%s : completed: %d, success: %d", __func__,
+                completed, success);
     }
 
-    if(thiz_class)
+    if (thiz_class)
         thiz_class->unref();
 
     return success;

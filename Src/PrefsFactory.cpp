@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2021 LG Electronics, Inc.
+// Copyright (c) 2013-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -157,7 +157,6 @@ void PrefsFactory::setServiceHandle(LSHandle* serviceHandle)
 
 void PrefsFactory::loadCoreServices(const std::string& a_confPath)
 {
-    /* { "services": [ "com.webos.service.tv", "com.webos.applicationManager" ] } */
     std::string jsonStr;
     if (!Utils::readFile(a_confPath, jsonStr))
         return;
@@ -463,9 +462,15 @@ void PrefsFactory::postPrefChangeCategory(LSHandle *lsHandle, const std::string 
         if (!dimInfo.isNull()) {
             replyRoot.put("dimension", dimInfo);
         }
-        if ( !(LSMessageGetSender(subscriptionValue.first) && sender == LSMessageGetSender(subscriptionValue.first)) ) {
-            if (!LSMessageReply(lsHandle, subscriptionValue.first, replyRoot.stringify().c_str(), &lsError)) {
-                SSERVICELOG_WARNING(MSGID_LSERROR_MSG, 2, PMLOGKS("Function",lsError.func), PMLOGKS("Error",lsError.message), "Reply to post");
+
+        auto msgSender = LSMessageGetSender(subscriptionValue.first);
+
+        if (!(msgSender && (sender == msgSender))) {
+            if (!LSMessageReply(lsHandle, subscriptionValue.first,
+                    replyRoot.stringify().c_str(), &lsError)) {
+                SSERVICELOG_WARNING(MSGID_LSERROR_MSG, 2,
+                        PMLOGKS("Function", lsError.func),
+                        PMLOGKS("Error", lsError.message), "Reply to post");
                 LSErrorPrint(&lsError, stderr);
                 LSErrorFree(&lsError);
             }
@@ -490,8 +495,10 @@ void PrefsFactory::postPrefChangeEach(LSHandle *lsHandle, const char *subscribeK
 
             LSMessage *message = LSSubscriptionNext(iter);
 
-            if (LSMessageGetSender(message) && sender == LSMessageGetSender(message))
+            auto msgSender = LSMessageGetSender(message);
+            if (msgSender && (sender == msgSender)) {
                 continue;
+            }
 
             if (!LSMessageReply(lsHandle, message, a_reply.c_str(), &lsError)) {
                 SSERVICELOG_WARNING(MSGID_LSERROR_MSG, 2, PMLOGKS("Function",lsError.func), PMLOGKS("Error",lsError.message), "Reply to post each");
@@ -724,7 +731,11 @@ int PrefsFactory::PublicAPIGuard::permissionMask(const std::string &perm)
 
 bool PrefsFactory::PublicAPIGuard::allowMessage(LSMessage *a_message)
 {
-    std::string method_name = LSMessageGetMethod(a_message);
+    auto methodName = LSMessageGetMethod(a_message);
+    if (!methodName)
+        return false;
+
+    std::string method_name = methodName;
 
     if ( m_readMethods.find(method_name) != m_readMethods.end() &&
             allowReadMessage(a_message) )
@@ -743,6 +754,9 @@ bool PrefsFactory::PublicAPIGuard::allowMessage(LSMessage *a_message)
 bool PrefsFactory::PublicAPIGuard::allowWriteMessage(LSMessage *message)
 {
     const char *payload = LSMessageGetPayload(message);
+    if (!payload)
+        return false;
+
     pbnjson::JValue root = pbnjson::JDomParser::fromString(payload);
     if (root.isNull()) {
         return false;
@@ -783,6 +797,9 @@ bool PrefsFactory::PublicAPIGuard::allowReadMessage(LSMessage *message)
     bool retVal = true;
 
     const char *payload = LSMessageGetPayload(message);
+    if (!payload)
+        return false;
+
     pbnjson::JValue root = pbnjson::JDomParser::fromString(payload);
     if (root.isNull()) {
         return false;

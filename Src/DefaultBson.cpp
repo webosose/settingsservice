@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -193,7 +193,7 @@ void DefaultBson::TokenizedIndexer::indexing(const unsigned int a_id, bson_iter_
     bson_iter_t itDescendant;
     if (bson_iter_find_descendant(&itArrayItemSub, m_key_name.c_str(), &itDescendant)) {
         const bson_value_t *bsonValue = bson_iter_value(&itDescendant);
-        if (bsonValue->value_type == BSON_TYPE_UTF8) {
+        if ((bsonValue->value_type == BSON_TYPE_UTF8) && bsonValue->value.v_utf8.str) {
             value = bsonValue->value.v_utf8.str;
         }
     }

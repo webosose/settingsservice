@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2022 LG Electronics, Inc.
+// Copyright (c) 2014-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,15 +34,14 @@ using namespace std;
 
 static const char* s_prefsFileWriterRuleFile = "/etc/palm/settings/prefsFileWriterRule.json";
 
-string bin2hex(const unsigned char *bin, size_t len)
-{
+string bin2hex(const unsigned char *bin, size_t len) {
     const char hex[] = "0123456789abcdef";
 
     string res;
-    for(size_t i = 0; i < len; ++i) {
-        unsigned char c = (unsigned char)bin[i];
-        res += hex[c >> 4];
-        res += hex[c & 0xf];
+    for (size_t i = 0; i < len; ++i) {
+        unsigned char c = (unsigned char) bin[i];
+        res += hex[(unsigned char) (c >> 4)];
+        res += hex[(unsigned char) (c & 0xf)];
     }
 
     return res;

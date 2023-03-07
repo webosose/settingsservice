@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2018 LG Electronics, Inc.
+// Copyright (c) 2015-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -717,7 +717,8 @@ bool doGetSystemSettings(LSHandle * lsHandle, LSMessage * message, MethodCallInf
 
           if(current_app) {
               SSERVICELOG_DEBUG("set current AppId: %s in %s\n", PrefsFactory::instance()->getCurrentAppId(), __FUNCTION__);
-              app_id = PrefsFactory::instance()->getCurrentAppId();
+              auto currAppId = PrefsFactory::instance()->getCurrentAppId();
+              app_id = currAppId ? currAppId : "";
           }
           else {
               label = root["app_id"];
@@ -882,7 +883,8 @@ bool doSetSystemSettings(LSHandle * lsHandle, LSMessage * message, MethodCallInf
 
         if(current_app) {
             SSERVICELOG_DEBUG("set current AppId: %s in %s\n", PrefsFactory::instance()->getCurrentAppId(), __FUNCTION__);
-            app_id = PrefsFactory::instance()->getCurrentAppId();
+            auto currAppId = PrefsFactory::instance()->getCurrentAppId();
+            app_id = currAppId ? currAppId : "";
         }
         else {
             label = root["app_id"];
@@ -1029,7 +1031,8 @@ bool doGetSystemSettingFactoryValue(LSHandle * lsHandle, LSMessage * message, Me
 
         if(current_app) {
             SSERVICELOG_DEBUG("set current AppId: %s in %s\n", PrefsFactory::instance()->getCurrentAppId(), __FUNCTION__);
-            app_id = PrefsFactory::instance()->getCurrentAppId();
+            auto currAppId = PrefsFactory::instance()->getCurrentAppId();
+            app_id = currAppId ? currAppId : "";
         }
         else {
             label = root["app_id"];
@@ -1683,7 +1686,9 @@ bool doGetSystemSettingDesc(LSHandle * lsHandle, LSMessage * message, MethodCall
                 pbnjson::JValue  jCurrentApp = root[KEYSTR_CURRENT_APP];
                 if (jCurrentApp.isBoolean()) {
                     if (jCurrentApp.asBool()) {
-                        appId = PrefsFactory::instance()->getCurrentAppId();
+                        auto currAppId =
+                                PrefsFactory::instance()->getCurrentAppId();
+                        appId = currAppId ? currAppId : "";
                     }
                 }
             }
@@ -2064,8 +2069,10 @@ bool doGetCurrentSettings(LSHandle * lsHandle, LSMessage * message, MethodCallIn
             subscribe = label.asBool();
 
         // set current appid
-        app_id = PrefsFactory::instance()->getCurrentAppId();
-        if ( app_id.empty() ) app_id = DEFAULT_APP_ID;
+        auto currAppId = PrefsFactory::instance()->getCurrentAppId();
+        app_id = currAppId ? currAppId : "";
+        if (app_id.empty())
+            app_id = DEFAULT_APP_ID;
 
         label = root["category"];
         if (label.isString())
