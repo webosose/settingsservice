@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2020 LG Electronics, Inc.
+// Copyright (c) 2013-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -196,7 +196,7 @@ private:
 
     // Insert message, category and key into container.
     //
-    void insert(MessageContainer& a_container, LSMessage * a_message, PrefsNotifier::Element a_element);
+    void insert(MessageContainer& a_container, LSMessage * a_message, PrefsNotifier::Element& a_element);
 
     // Checks whether specified message is in the container.
     //

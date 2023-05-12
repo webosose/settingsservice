@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2023 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ void PrefsNotifier::initialize()
     PrefsFactory::instance()->registerSubscriptionCancel(func);
 }
 
-void PrefsNotifier::insert(MessageContainer& a_container, LSMessage * a_message, PrefsNotifier::Element a_element)
+void PrefsNotifier::insert(MessageContainer& a_container, LSMessage * a_message, PrefsNotifier::Element& a_element)
 {
     LSMessageElem messageElem(a_message);
 
@@ -136,7 +136,8 @@ void PrefsNotifier::addSubscriptionImpl(LSHandle *a_handle, const std::string& a
     std::set<std::string> dependentDims = PrefsKeyDescMap::instance()->findDependentDimensions(a_key);
 
     std::set<std::string> subscribeKeyList;
-
+    
+    Element ObjElement(a_category, a_key, a_appId, Element::emptyDimension, a_type);
     for ( const std::string& k : dependentDims )
         subscribeKeyList.insert(k + subscriptionValueKey);
 
@@ -149,12 +150,12 @@ void PrefsNotifier::addSubscriptionImpl(LSHandle *a_handle, const std::string& a
         {
             MessageContainer& msgContainer = it->second;
 
-            insert(msgContainer, a_message, Element(a_category, a_key, a_appId, Element::emptyDimension, a_type));
+            insert(msgContainer, a_message, ObjElement);
         }
         else
         {
             MessageContainer msgContainer;
-            insert(msgContainer, a_message, Element(a_category, a_key, a_appId, Element::emptyDimension, a_type));
+            insert(msgContainer, a_message, ObjElement);
             m_container.insert( ContainerType::value_type(k, msgContainer) );
         }
 
@@ -181,13 +182,13 @@ void PrefsNotifier::addSubscription(LSHandle *a_handle, const std::string &a_cat
 
     std::lock_guard<std::recursive_mutex> lock(m_container_mutex);
     it = m_container.find(subscribe_key);
-
+    Element ObjElement(a_cat, a_key, subscribe_key, Element::eKey);
     if (it != m_container.end()) {
         MessageContainer& msgContainer = it->second;
-        insert(msgContainer, a_msg, Element(a_cat, a_key, subscribe_key, Element::eKey));
+        insert(msgContainer, a_msg, ObjElement);
     } else {
         MessageContainer msgContainer;
-        insert(msgContainer, a_msg, Element(a_cat, a_key, subscribe_key, Element::eKey));
+        insert(msgContainer, a_msg, ObjElement);
         m_container.insert( ContainerType::value_type(subscribe_key, msgContainer) );
     }
 
@@ -210,13 +211,13 @@ void PrefsNotifier::addDescSubscription(LSHandle *a_handle, const std::string& a
 
     std::lock_guard<std::recursive_mutex> lock(m_container_mutex);
     it = m_container.find(subscribe_key);
-
+    Element ElementObj(a_category, a_key, a_appId, subscribe_key, Element::eDesc);
     if (it != m_container.end()) {
         MessageContainer& msgContainer = it->second;
-        insert(msgContainer, a_message, Element(a_category, a_key, a_appId, subscribe_key, Element::eDesc));
+        insert(msgContainer, a_message, ElementObj);
     } else {
         MessageContainer msgContainer;
-        insert(msgContainer, a_message, Element(a_category, a_key, a_appId, subscribe_key, Element::eDesc));
+        insert(msgContainer, a_message, ElementObj);
         m_container.insert( ContainerType::value_type(subscribe_key, msgContainer) );
     }
 }
