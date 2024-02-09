@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2015-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -118,6 +118,12 @@ const std::string& MethodCallInfo::getMethodName() const
 const std::string& MethodTaskMgr::getMethodName(unsigned int methodId)
 {
     return methodInfo[methodId].name;
+}
+
+MethodTaskMgr *MethodTaskMgr::instance()
+{
+    static MethodTaskMgr s_instance;
+    return &s_instance;
 }
 
 MethodTaskMgr::MethodTaskMgr() :
@@ -455,11 +461,11 @@ bool MethodTaskMgr::pushBatchMethod(LSHandle *lsHandle, LSMessage *message, cons
         if(id > METHODID_MIN) {
             std::unique_ptr<BatchInfo> pBatchInfo(new BatchInfo(index, pBatchMethodInfo, it.params));
 
-            if (push(id, lsHandle, message, pBatchInfo.get()))
+            if (push(id, lsHandle, message, pBatchInfo.release()))
             {
-                pBatchInfo.release();
                 SSERVICELOG_DEBUG("pushed an item of batch method, now total is: %d ", index + 1);
-            } else
+            }
+            else
             {
                 SSERVICELOG_DEBUG("failed to push an item of batch method");
             }

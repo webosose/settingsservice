@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2023 LG Electronics, Inc.
+// Copyright (c) 2015-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ AccessChecker::Impl::check(LSMessage *message, CallbackType callback) const
     LSError lsError;
     LSErrorInit(&lsError);
 
-    if (!LSCallOneReply(m_handle, url.c_str(), request.stringify().c_str(), processReply, params.get(), &token, &lsError))
+    if (!LSCallOneReply(m_handle, url.c_str(), request.stringify().c_str(), processReply, params.release(), &token, &lsError))
     {
         SSERVICELOG_WARNING("ACCESSCHECKER_REQUEST_FAIL", 2, PMLOGKS("Function",lsError.func), PMLOGKS("Error",lsError.message), "");
         LSErrorFree(&lsError);
@@ -127,7 +127,6 @@ AccessChecker::Impl::check(LSMessage *message, CallbackType callback) const
     }
 
     LSMessageRef(message);
-    params.release();
     return true;
 }
 

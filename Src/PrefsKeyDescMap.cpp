@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2022 LG Electronics, Inc.
+// Copyright (c) 2013-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -2112,7 +2112,7 @@ void PrefsKeyDescMap::sendUpdatePreferenceFiles(void)
     requestInfo->cbFunc = reinterpret_cast<void *>(&PrefsKeyDescMap::cbUpdatePreferenceFiles);
     requestInfo->thiz_class = static_cast<void *>(const_cast<PrefsKeyDescMap*>(this));
     SSERVICELOG_TRACE("%s", __FUNCTION__);
-    PrefsFactory::instance()->getTaskManager().pushUserMethod(METHODID_REQUEST_GETSYSTEMSETTIGNS_SINGLE, PrefsFactory::instance()->getServiceHandle(PrefsFactory::COM_WEBOS_SERVICE), NULL, reinterpret_cast<void *>(requestInfo), TASK_PUSH_FRONT);
+    PrefsFactory::instance()->getTaskManager()->pushUserMethod(METHODID_REQUEST_GETSYSTEMSETTIGNS_SINGLE, PrefsFactory::instance()->getServiceHandle(PrefsFactory::COM_WEBOS_SERVICE), NULL, reinterpret_cast<void *>(requestInfo), TASK_PUSH_FRONT);
 }
 
 bool PrefsKeyDescMap::cbUpdatePreferenceFiles(void *a_thiz_class, void *a_userdata, const std::string& a_category, const std::string& a_appId, pbnjson::JValue a_dimObj, pbnjson::JValue a_result)

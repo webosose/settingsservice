@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2023 LG Electronics, Inc.
+// Copyright (c) 2013-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -393,7 +393,7 @@ void PrefsNotifier::notifyAllSettings(void)
             requestInfo->cbFunc = reinterpret_cast<void *>(&PrefsNotifier::cbGetSettings);
             requestInfo->thiz_class = reinterpret_cast<void *>(const_cast<PrefsNotifier *>(this));
             SSERVICELOG_TRACE("%s: %s", __FUNCTION__, dimension_obj.stringify().c_str());
-            PrefsFactory::instance()->getTaskManager().pushUserMethod(METHODID_REQUEST_GETSYSTEMSETTIGNS, PrefsFactory::instance()->getServiceHandle(PrefsFactory::COM_WEBOS_SERVICE), NULL, reinterpret_cast<void *>(requestInfo), TASK_PUSH_FRONT);
+            PrefsFactory::instance()->getTaskManager()->pushUserMethod(METHODID_REQUEST_GETSYSTEMSETTIGNS, PrefsFactory::instance()->getServiceHandle(PrefsFactory::COM_WEBOS_SERVICE), NULL, reinterpret_cast<void *>(requestInfo), TASK_PUSH_FRONT);
         }
 
         if (requestDescList.size())
@@ -459,7 +459,7 @@ void PrefsNotifier::notifyByDimension(const std::string& a_category, const std::
         requestInfo->cbFunc = reinterpret_cast<void *>(&PrefsNotifier::cbGetSettings);
         requestInfo->thiz_class = reinterpret_cast<void *>(const_cast<PrefsNotifier *>(this));
         SSERVICELOG_TRACE("%s", __FUNCTION__);
-        PrefsFactory::instance()->getTaskManager().pushUserMethod(METHODID_REQUEST_GETSYSTEMSETTIGNS, PrefsFactory::instance()->getServiceHandle(PrefsFactory::COM_WEBOS_SERVICE), NULL, reinterpret_cast<void *>(requestInfo), TASK_PUSH_FRONT);
+        PrefsFactory::instance()->getTaskManager()->pushUserMethod(METHODID_REQUEST_GETSYSTEMSETTIGNS, PrefsFactory::instance()->getServiceHandle(PrefsFactory::COM_WEBOS_SERVICE), NULL, reinterpret_cast<void *>(requestInfo), TASK_PUSH_FRONT);
     }
 
     if (requestDescList.size())

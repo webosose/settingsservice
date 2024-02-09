@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2023 LG Electronics, Inc.
+// Copyright (c) 2015-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,6 @@
 #include "SettingsServiceApi.h"
 #include "Utils.h"
 #include "AccessChecker.h"
-
-extern MethodTaskMgr methodTaskMgr;
 
 static LSMethod s_methods[] = {
         // public:
@@ -172,7 +170,7 @@ bool cbBatchProcess(LSHandle * lsHandle, LSMessage * message, void *user_data)
         if (done)
             break;
 
-        success = methodTaskMgr.pushBatchMethod(lsHandle, message, batchParmList);
+        success = MethodTaskMgr::instance()->pushBatchMethod(lsHandle, message, batchParmList);
         if(!success) {
             errorText = "Error!! to insert Batch method to the task queue";
         }
@@ -305,7 +303,7 @@ bool cbGetSystemSettings(LSHandle * lsHandle, LSMessage * message, void *user_da
         if (!allowed && !static_cast<PrefsFactory*>(user_data)->hasAccess(lsHandle, msg))
         {
             sendErrorReply(lsHandle, msg, SETTINGSSERVICE_METHOD_GETSYSTEMSETTINGS, "Access denied", true);
-        } else if (!methodTaskMgr.push(METHODID_GETSYSTEMSETTINGS, lsHandle, msg))
+        } else if (!MethodTaskMgr::instance()->push(METHODID_GETSYSTEMSETTINGS, lsHandle, msg))
         {
             sendErrorReply(lsHandle, msg, SETTINGSSERVICE_METHOD_GETSYSTEMSETTINGS, "Failed to insert method to the task queue", true);
         }
@@ -340,7 +338,7 @@ bool cbSetSystemSettings(LSHandle * lsHandle, LSMessage * message, void *user_da
         if (!allowed && !static_cast<PrefsFactory*>(user_data)->hasAccess(lsHandle, msg))
         {
             sendErrorReply(lsHandle, msg, SETTINGSSERVICE_METHOD_SETSYSTEMSETTINGS, "Access denied", false);
-        } else if (!methodTaskMgr.push(METHODID_SETSYSTEMSETTINGS, lsHandle, msg))
+        } else if (!MethodTaskMgr::instance()->push(METHODID_SETSYSTEMSETTINGS, lsHandle, msg))
         {
             sendErrorReply(lsHandle, msg, SETTINGSSERVICE_METHOD_SETSYSTEMSETTINGS, "Failed to insert method to the task queue", true);
         }
@@ -370,8 +368,8 @@ bool cbGetSystemSettingFactoryValue(LSHandle * lsHandle, LSMessage * message, vo
 
     VALIDATE_SCHEMA_AND_RETURN(lsHandle, message, JSON_SCHEMA_GET_SYSTEM_SETTING_FACTORY_VALUE_PARAM_V2)
 
-    if (!methodTaskMgr.push(methodId, lsHandle, message)) {
-        std::string errorText = "Error!! to insert method " + methodTaskMgr.getMethodName(methodId) + " to task que";
+    if (!MethodTaskMgr::instance()->push(methodId, lsHandle, message)) {
+        std::string errorText = "Error!! to insert method " + MethodTaskMgr::instance()->getMethodName(methodId) + " to task que";
         sendErrorReply(lsHandle, message, SETTINGSSERVICE_METHOD_GETSYSTEMSETTINGFACTORYVALUE, errorText, false);
     }
 
@@ -393,10 +391,10 @@ bool cbSetSystemSettingFactoryValue(LSHandle * lsHandle, LSMessage * message, vo
 
     VALIDATE_SCHEMA_AND_RETURN(lsHandle, message, JSON_SCHEMA_SET_SYSTEM_SETTING_FACTORY_VALUE_PARAM_V2)
 
-    if(!methodTaskMgr.push(methodId, lsHandle, message)) {
+    if(!MethodTaskMgr::instance()->push(methodId, lsHandle, message)) {
         std::string errorText;
 
-        errorText = "Error!! to insert method " + methodTaskMgr.getMethodName(methodId) + " to task que";
+        errorText = "Error!! to insert method " + MethodTaskMgr::instance()->getMethodName(methodId) + " to task que";
 
         sendErrorReply(lsHandle, message, SETTINGSSERVICE_METHOD_SETSYSTEMSETTINGFACTORYVALUE, errorText, false);
     }
@@ -420,10 +418,10 @@ bool cbGetCurrentSettings(LSHandle * lsHandle, LSMessage * message, void *user_d
 
     VALIDATE_SCHEMA_AND_RETURN(lsHandle, message, JSON_SCHEMA_GET_CURRENT_SETTINGS_V2)
 
-    if(!methodTaskMgr.push(methodId, lsHandle, message)) {
+    if(!MethodTaskMgr::instance()->push(methodId, lsHandle, message)) {
         std::string errorText;
 
-        errorText = "Error!! to insert method " + methodTaskMgr.getMethodName(methodId) + " to task que";
+        errorText = "Error!! to insert method " + MethodTaskMgr::instance()->getMethodName(methodId) + " to task que";
 
         sendErrorReply(lsHandle, message, SETTINGSSERVICE_METHOD_GETCURRENTSETTINGS, errorText, true);
     }
@@ -452,7 +450,7 @@ bool cbGetSystemSettingValues(LSHandle * lsHandle, LSMessage * message, void *us
         if (!allowed && !static_cast<PrefsFactory*>(user_data)->hasAccess(lsHandle, lsMsg))
         {
             sendErrorReply(lsHandle, lsMsg, SETTINGSSERVICE_METHOD_GETSYSTEMSETTINGVALUES, "Access denied", true);
-        } else if (!methodTaskMgr.push(METHODID_GETSYSTEMSETTINGVALUES, lsHandle, lsMsg))
+        } else if (!MethodTaskMgr::instance()->push(METHODID_GETSYSTEMSETTINGVALUES, lsHandle, lsMsg))
         {
             sendErrorReply(lsHandle, lsMsg, SETTINGSSERVICE_METHOD_GETSYSTEMSETTINGVALUES, "Failed to insert method to the task queue", true);
         }
@@ -482,10 +480,10 @@ bool cbSetSystemSettingValues(LSHandle * lsHandle, LSMessage * message, void *us
 
     VALIDATE_SCHEMA_AND_RETURN(lsHandle, message, JSON_SCHEMA_SET_SYSTEM_SETTING_VALUES_PARAM_V2)
 
-    if(!methodTaskMgr.push(methodId, lsHandle, message)) {
+    if(!MethodTaskMgr::instance()->push(methodId, lsHandle, message)) {
         std::string errorText;
 
-        errorText = "Error!! to insert method " + methodTaskMgr.getMethodName(methodId) + " to task que";
+        errorText = "Error!! to insert method " + MethodTaskMgr::instance()->getMethodName(methodId) + " to task que";
 
         sendErrorReply(lsHandle, message, SETTINGSSERVICE_METHOD_SETSYSTEMSETTINGVALUES, errorText, false);
     }
@@ -509,10 +507,10 @@ bool cbGetSystemSettingDesc(LSHandle * lsHandle, LSMessage * message, void *user
 
     VALIDATE_SCHEMA_AND_RETURN(lsHandle, message, JSON_SCHEMA_GET_SYSTEM_SETTING_DESC_PARAM_V2)
 
-    if(!methodTaskMgr.push(methodId, lsHandle, message)) {
+    if(!MethodTaskMgr::instance()->push(methodId, lsHandle, message)) {
         std::string errorText;
 
-        errorText = "Error!! to insert method " + methodTaskMgr.getMethodName(methodId) + " to task que";
+        errorText = "Error!! to insert method " + MethodTaskMgr::instance()->getMethodName(methodId) + " to task que";
 
         sendErrorReply(lsHandle, message, SETTINGSSERVICE_METHOD_GETSYSTEMSETTINGDESC, errorText, true);
     }
@@ -536,10 +534,10 @@ bool cbSetSystemSettingDesc(LSHandle * lsHandle, LSMessage * message, void *user
 
     VALIDATE_SCHEMA_AND_RETURN(lsHandle, message, JSON_SCHEMA_SET_SYSTEM_SETTING_DESC_PARAM_V2)
 
-    if(!methodTaskMgr.push(methodId, lsHandle, message)) {
+    if(!MethodTaskMgr::instance()->push(methodId, lsHandle, message)) {
         std::string errorText;
 
-        errorText = "Error!! to insert method " + methodTaskMgr.getMethodName(methodId) + " to task que";
+        errorText = "Error!! to insert method " + MethodTaskMgr::instance()->getMethodName(methodId) + " to task que";
 
         sendErrorReply(lsHandle, message, SETTINGSSERVICE_METHOD_SETSYSTEMSETTINGDESC, errorText, false);
     }
@@ -564,10 +562,10 @@ bool cbSetSystemSettingFactoryDesc(LSHandle * lsHandle, LSMessage * message, voi
     /* the schema is same with setSystemSettingDesc */
     VALIDATE_SCHEMA_AND_RETURN(lsHandle, message, JSON_SCHEMA_SET_SYSTEM_SETTING_DESC_PARAM_V2)
 
-    if(!methodTaskMgr.push(methodId, lsHandle, message)) {
+    if(!MethodTaskMgr::instance()->push(methodId, lsHandle, message)) {
         std::string errorText;
 
-        errorText = "Error!! to insert method " + methodTaskMgr.getMethodName(methodId) + " to task que";
+        errorText = "Error!! to insert method " + MethodTaskMgr::instance()->getMethodName(methodId) + " to task que";
 
         sendErrorReply(lsHandle, message, SETTINGSSERVICE_METHOD_SETSYSTEMSETTINGFACTORYDESC, errorText, false);
     }
@@ -591,10 +589,10 @@ bool cbDelSystemSettings(LSHandle * lsHandle, LSMessage * message, void *user_da
 
     VALIDATE_SCHEMA_AND_RETURN(lsHandle, message, JSON_SCHEMA_DEL_SYSTEM_SETTINGS_V2)
 
-    if(!methodTaskMgr.push(methodId, lsHandle, message)) {
+    if(!MethodTaskMgr::instance()->push(methodId, lsHandle, message)) {
         std::string errorText;
 
-        errorText = "Error!! to insert method " + methodTaskMgr.getMethodName(methodId) + " to task que";
+        errorText = "Error!! to insert method " + MethodTaskMgr::instance()->getMethodName(methodId) + " to task que";
 
         sendErrorReply(lsHandle, message, SETTINGSSERVICE_METHOD_DELETESYSTEMSETTINGS, errorText, false);
     }
@@ -618,10 +616,10 @@ bool cbResetSystemSettings(LSHandle * lsHandle, LSMessage * message, void *user_
 
     VALIDATE_SCHEMA_AND_RETURN(lsHandle, message, JSON_SCHEMA_RESET_SYSTEM_SETTINGS_V2)
 
-    if(!methodTaskMgr.push(methodId, lsHandle, message)) {
+    if(!MethodTaskMgr::instance()->push(methodId, lsHandle, message)) {
         std::string errorText;
 
-        errorText = "Error!! to insert method " + methodTaskMgr.getMethodName(methodId) + " to task que";
+        errorText = "Error!! to insert method " + MethodTaskMgr::instance()->getMethodName(methodId) + " to task que";
 
         sendErrorReply(lsHandle, message, SETTINGSSERVICE_METHOD_RESETSYSTEMSETTINGS, errorText, false);
     }
@@ -645,10 +643,10 @@ bool cbResetSystemSettingDesc(LSHandle *lsHandle, LSMessage *message, void *user
 
     VALIDATE_SCHEMA_AND_RETURN(lsHandle, message, JSON_SCHEMA_RESET_SYSTEM_SETTING_DESC_V2)
 
-    if (!methodTaskMgr.push(methodId, lsHandle, message)) {
+    if (!MethodTaskMgr::instance()->push(methodId, lsHandle, message)) {
         std::string errorText;
 
-        errorText = "Error!! to insert method " + methodTaskMgr.getMethodName(methodId) + " to task que";
+        errorText = "Error!! to insert method " + MethodTaskMgr::instance()->getMethodName(methodId) + " to task que";
 
         sendErrorReply(lsHandle, message, SETTINGSSERVICE_METHOD_RESETSYSTEMSETTINGDESC, errorText, false);
     }

@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2023 LG Electronics, Inc.
+// Copyright (c) 2013-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,8 +40,6 @@
 #include "SettingsService.h"
 #include "SettingsServiceApi.h"
 #include "Utils.h"
-
-MethodTaskMgr methodTaskMgr;
 
 const std::string PrefsFactory::service_name("com.webos.settingsservice");
 const std::string PrefsFactory::service_root_uri("luna://" + PrefsFactory::service_name + "/");
@@ -198,7 +196,7 @@ bool PrefsFactory::isReady(void)
 
 void PrefsFactory::serviceStart(void)
 {
-    methodTaskMgr.createTaskThread();
+    MethodTaskMgr::instance()->createTaskThread();
 }
 
 void PrefsFactory::serviceReady(void)
@@ -239,7 +237,7 @@ void PrefsFactory::releaseTask(MethodCallInfo** p, pbnjson::JValue replyObj)
         return;
     }
 
-    methodTaskMgr.releaseTask(p, replyObj);
+    MethodTaskMgr::instance()->releaseTask(p, replyObj);
 }
 
 const std::vector<LSHandle*>& PrefsFactory::getServiceHandles() const {
@@ -270,9 +268,9 @@ void PrefsFactory::registerSubscriptionCancel(SubsCancelFunc a_func)
     m_cbSubsCancel.push_back(a_func);
 }
 
-MethodTaskMgr& PrefsFactory::getTaskManager() const
+MethodTaskMgr* PrefsFactory::getTaskManager() const
 {
-    return methodTaskMgr;
+    return MethodTaskMgr::instance();
 }
 
 bool PrefsFactory::noSubscriber(const char *a_key, LSMessage *a_exception) const

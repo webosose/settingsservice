@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 LG Electronics, Inc.
+// Copyright (c) 2013-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -756,15 +756,12 @@ bool PrefsDb8Init::cbCurAppIdSubscribers(LSHandle * sh, LSMessage * message, voi
         if (!curAppId.empty())
         {
             std::unique_ptr<std::string> appId(new std::string(curAppId));
-            if (PrefsFactory::instance()->getTaskManager().pushUserMethod(
+            PrefsFactory::instance()->getTaskManager()->pushUserMethod(
                 METHODID_CHANGE_APP,
                 PrefsFactory::instance()->getServiceHandle(PrefsFactory::COM_WEBOS_SERVICE),
                 nullptr,
-                appId.get(),
-                TASK_PUSH_BACK))
-            {
-                appId.release();
-            }
+                appId.release(),
+                TASK_PUSH_BACK);
         }
 
         SSERVICELOG_DEBUG("%s: currnet app id: %s", __FUNCTION__, curAppId.c_str());
@@ -832,15 +829,12 @@ bool PrefsDb8Init::cbListAppsSubscribers(LSHandle * sh, LSMessage * message, voi
         SSERVICELOG_DEBUG("%s: removed app id: %s", __FUNCTION__, removedAppId.c_str());
         {
             std::unique_ptr<std::string> appId(new std::string(removedAppId));
-            if (PrefsFactory::instance()->getTaskManager().pushUserMethod(
+            PrefsFactory::instance()->getTaskManager()->pushUserMethod(
                     METHODID_UNINSTALL_APP,
                     PrefsFactory::instance()->getServiceHandle(PrefsFactory::COM_WEBOS_SERVICE),
                     nullptr,
-                    appId.get(),
-                    TASK_PUSH_BACK))
-            {
-                appId.release();
-            }
+                    appId.release(),
+                    TASK_PUSH_BACK);
        }
 
     } while(false);

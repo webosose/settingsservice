@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2018 LG Electronics, Inc.
+// Copyright (c) 2015-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -83,39 +83,41 @@ set<string> PrefsPerAppHandler::findKeys(const string& a_category, const string&
 
 bool PrefsPerAppHandler::doSendValueQuery()
 {
-    unique_lock<recursive_mutex> lock(m_container_mutex);
-
-    if (m_categorySubscriptionMessagesMapForValue.empty())
-        return next();
-
-    PrefsKeyDescMap* keyDesc = PrefsKeyDescMap::instance();
-
     pbnjson::JValue jOperations(pbnjson::Array());
-    for (auto& it : m_categorySubscriptionMessagesMapForValue) { // each category registered per-app subscription
-        if (it.second.empty())
-            continue;
+    {
+        lock_guard<recursive_mutex> lock(m_container_mutex);
+        if (m_categorySubscriptionMessagesMapForValue.empty())
+            return next();
 
-        set<string> keyList = findKeys(it.first, DBTYPE_MIXED);
+        PrefsKeyDescMap *keyDesc = PrefsKeyDescMap::instance();
 
-        CategoryDimKeyListMap categoryDimKeysMap = keyDesc->getCategoryKeyListMap(it.first, pbnjson::JValue(), keyList);
-        std::string categoryDim;
-        if (PrefsKeyDescMap::instance()->getCategoryDim(it.first, categoryDim)) {
-            categoryDimKeysMap[categoryDim] = keyList;
-        }
+        for (auto &it : m_categorySubscriptionMessagesMapForValue)
+        { // each category registered per-app subscription
+            if (it.second.empty())
+                continue;
 
-        for (auto& it : categoryDimKeysMap) {
-            jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, GLOBAL_APP_ID, SETTINGSSERVICE_KIND_DEFAULT));
-            jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, GLOBAL_APP_ID, SETTINGSSERVICE_KIND_MAIN));
-            jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, m_prevAppId, SETTINGSSERVICE_KIND_DEFAULT));
-            jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, m_prevAppId, SETTINGSSERVICE_KIND_MAIN));
-            jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, m_currAppId, SETTINGSSERVICE_KIND_DEFAULT));
-            jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, m_currAppId, SETTINGSSERVICE_KIND_MAIN));
+            set<string> keyList = findKeys(it.first, DBTYPE_MIXED);
+
+            CategoryDimKeyListMap categoryDimKeysMap = keyDesc->getCategoryKeyListMap(it.first, pbnjson::JValue(), keyList);
+            std::string categoryDim;
+            if (PrefsKeyDescMap::instance()->getCategoryDim(it.first, categoryDim))
+            {
+                categoryDimKeysMap[categoryDim] = keyList;
+            }
+
+            for (auto &it : categoryDimKeysMap)
+            {
+                jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, GLOBAL_APP_ID, SETTINGSSERVICE_KIND_DEFAULT));
+                jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, GLOBAL_APP_ID, SETTINGSSERVICE_KIND_MAIN));
+                jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, m_prevAppId, SETTINGSSERVICE_KIND_DEFAULT));
+                jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, m_prevAppId, SETTINGSSERVICE_KIND_MAIN));
+                jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, m_currAppId, SETTINGSSERVICE_KIND_DEFAULT));
+                jOperations.append(PrefsDb8Get::jsonFindBatchItem(it.first, true, it.second, true, m_currAppId, SETTINGSSERVICE_KIND_MAIN));
+            }
         }
     }
     pbnjson::JObject jBatchQuery;
     jBatchQuery.put("operations", jOperations);
-
-    lock.unlock();
 
     bool ret = DB8_luna_call(m_lsHandle, "luna://com.webos.service.db/batch", jBatchQuery.stringify().c_str(), cbSendValueQuery, this, NULL, &m_lsError);
     if (!ret) {
@@ -335,51 +337,51 @@ pbnjson::JValue pickObject(pbnjson::JValue jObj, const set<string>& keys)
 
 bool PrefsPerAppHandler::doHandleDescQuery()
 {
-    unique_lock<recursive_mutex> lock(m_container_mutex);
-
-    if (m_keySubscriptionMessagesMapForDesc.empty())
-        return next();
-
-    PrefsKeyDescMap* keyDesc = PrefsKeyDescMap::instance();
-
     map<LSMessageElem, pbnjson::JValue> subscriptions;
+    {
+        lock_guard<recursive_mutex> lock(m_container_mutex);
 
-    for (auto& it : m_keySubscriptionMessagesMapForDesc) { // each key registered per-app subscription
-        if (it.second.empty())
-            continue;
+        if (m_keySubscriptionMessagesMapForDesc.empty())
+            return next();
 
-        string category;
-        keyDesc->getCategory(it.first, category);
+        PrefsKeyDescMap *keyDesc = PrefsKeyDescMap::instance();
 
-        pbnjson::JValue jRootPrev(keyDesc->getKeyDesc(category, {it.first}, m_prevAppId));
-        pbnjson::JValue jRootCurr (keyDesc->getKeyDesc(category, {it.first}, m_currAppId));
+        for (auto &it : m_keySubscriptionMessagesMapForDesc)
+        { // each key registered per-app subscription
+            if (it.second.empty())
+                continue;
 
-        pbnjson::JValue jResultsPrev = jRootPrev["results"];
-        pbnjson::JValue jResultsCurr = jRootCurr["results"];
+            string category;
+            keyDesc->getCategory(it.first, category);
 
-        pbnjson::JValue jItemPrev = findItemInArrayByKeyValue(jResultsPrev, KEYSTR_KEY, it.first);
-        pbnjson::JValue jItemCurr = findItemInArrayByKeyValue(jResultsCurr, KEYSTR_KEY, it.first);
+            pbnjson::JValue jRootPrev(keyDesc->getKeyDesc(category, {it.first}, m_prevAppId));
+            pbnjson::JValue jRootCurr(keyDesc->getKeyDesc(category, {it.first}, m_currAppId));
 
-        pbnjson::JValue jItemPrevPicked = pickObject(jItemPrev, {"ui", "values"});
-        pbnjson::JValue jItemCurrPicked = pickObject(jItemCurr, {"ui", "values"});
+            pbnjson::JValue jResultsPrev = jRootPrev["results"];
+            pbnjson::JValue jResultsCurr = jRootCurr["results"];
 
-        if (jItemPrevPicked == jItemCurrPicked)
-            continue;
+            pbnjson::JValue jItemPrev = findItemInArrayByKeyValue(jResultsPrev, KEYSTR_KEY, it.first);
+            pbnjson::JValue jItemCurr = findItemInArrayByKeyValue(jResultsCurr, KEYSTR_KEY, it.first);
 
-        string subscribeKey = SUBSCRIBE_STR_KEYDESC(it.first, _CURRENT_APP);
+            pbnjson::JValue jItemPrevPicked = pickObject(jItemPrev, {"ui", "values"});
+            pbnjson::JValue jItemCurrPicked = pickObject(jItemCurr, {"ui", "values"});
 
-        subsFn(subscribeKey, [&](LSMessage* lsMessage) {
+            if (jItemPrevPicked == jItemCurrPicked)
+                continue;
+
+            string subscribeKey = SUBSCRIBE_STR_KEYDESC(it.first, _CURRENT_APP);
+
+            subsFn(subscribeKey, [&](LSMessage *lsMessage)
+                   {
             if (isMessageInExclude(lsMessage)) {
                 return;
             }
             if (subscriptions.count(lsMessage) == 0) {
                 subscriptions[LSMessageElem(lsMessage)] = pbnjson::Array();
             }
-            subscriptions[lsMessage].append(jItemCurr);
-        });
+            subscriptions[lsMessage].append(jItemCurr); });
+        }
     }
-
-    lock.unlock();
 
     for (auto& it : subscriptions) {
         LSMessage* lsMessage = it.first.get();

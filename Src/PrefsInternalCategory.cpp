@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2023 LG Electronics, Inc.
+// Copyright (c) 2015-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ bool cbInternalCategoryGeneralCallback(LSHandle* lsHandle, LSMessage* message, v
 {
     PrefsFactory *prefsFactory = static_cast<PrefsFactory*>(context);
 
-    if (!prefsFactory->getTaskManager().push(METHODID_INTERNAL_GENERAL, lsHandle, message)) {
+    if (!prefsFactory->getTaskManager()->push(METHODID_INTERNAL_GENERAL, lsHandle, message)) {
         LSMessageReplyWrapper(lsHandle, message, "{\"returnValue\":false, \"errorText\":\"Error!! to insert request for internal category to task que\"}");
     }
 
@@ -145,14 +145,10 @@ void PrefsInternalCategory::handleMethodInstrument()
 
             if (appId.isString()) {
                 std::unique_ptr<std::string> appIdPtr(new std::string(appId.asString()));
-                bool pushMethodResult = PrefsFactory::instance()->getTaskManager().pushUserMethod(
+                PrefsFactory::instance()->getTaskManager()->pushUserMethod(
                                           METHODID_CHANGE_APP,
                                           PrefsFactory::instance()->getServiceHandle(PrefsFactory::COM_WEBOS_SERVICE),
-                                          nullptr, appIdPtr.get(), TASK_PUSH_BACK);
-                if (pushMethodResult)
-                {
-                    appIdPtr.release();
-                }
+                                          nullptr, appIdPtr.release(), TASK_PUSH_BACK);
                 LSMessageReplyWrapper(m_handle, m_message, "{\"returnValue\":true}");
             }
             else {
@@ -169,14 +165,10 @@ void PrefsInternalCategory::handleMethodInstrument()
             pbnjson::JValue appId = params["app_id"];
             if (appId.isString()) {
                 std::unique_ptr<std::string> appIdPtr(new std::string(appId.asString()));
-                bool pushMethodResult = PrefsFactory::instance()->getTaskManager().pushUserMethod(
+                PrefsFactory::instance()->getTaskManager()->pushUserMethod(
                         METHODID_UNINSTALL_APP,
                         PrefsFactory::instance()->getServiceHandle(PrefsFactory::COM_WEBOS_SERVICE),
-                        nullptr, appIdPtr.get(), TASK_PUSH_BACK);
-                if (pushMethodResult)
-                {
-                    appIdPtr.release();
-                }
+                        nullptr, appIdPtr.release(), TASK_PUSH_BACK);
                 LSMessageReplyWrapper(m_handle, m_message, "{\"returnValue\":true}");
             } else {
                 LSMessageReplyWrapper(m_handle, m_message, "{\"returnValue\":false}");
