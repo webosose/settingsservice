@@ -350,7 +350,7 @@ void PrefsNotifier::notifyAllSettings(void)
 
     {
         std::lock_guard<std::recursive_mutex> lock(m_container_mutex);
-        for (auto it : m_container) {
+        for (const auto &it : m_container) {
             const std::string & dimensionStr = it.first;
             dimensionListInContainer.push_back(dimensionStr);
         }

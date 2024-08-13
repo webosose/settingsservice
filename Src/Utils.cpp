@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2023 LG Electronics, Inc.
+// Copyright (c) 2013-2024 LG Electronics, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -302,13 +302,13 @@ namespace Utils {
         std::string payload = pbnjson::JGenerator::serialize(parsed, pbnjson::JSchemaFragment("{}"));
         Instrument::SubscriptionDumpItem subscriber;
 
-        subscriber.message = payload;
+        subscriber.message = std::move(payload);
         auto lsMethod = LSMessageGetMethod(a_message);
         subscriber.method = lsMethod ? lsMethod : "";
         if(auto sender = LSMessageGetSenderServiceName(a_message)) {
             subscriber.sender = sender;
         }
-        g_subscriptionMap[LSMessageGetSender(a_message)] = subscriber;
+        g_subscriptionMap[LSMessageGetSender(a_message)] = std::move(subscriber);
 
         LSError lsError;
         LSErrorInit(&lsError);

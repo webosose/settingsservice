@@ -96,7 +96,7 @@ bool PrefsFactory::cbSubscriptionCancel(LSHandle * a_handle, LSMessage * a_messa
     PrefsFactory * thiz_class = reinterpret_cast<PrefsFactory *>(a_data);
     if (!a_data) return true;
 
-    for (auto func : thiz_class->m_cbSubsCancel)
+    for (const auto &func : thiz_class->m_cbSubsCancel)
     {
         func(a_handle, a_message);
     }

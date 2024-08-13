@@ -191,7 +191,7 @@ void PrefsInternalCategory::handleMethodGetCurrentSubscriptions()
     jsonRoot.put("returnValue", true);
     pbnjson::JArray jsonItemArray;
 
-    for (auto it : subscriptions->subscriptionMap())
+    for (const auto &it : subscriptions->subscriptionMap())
     {
         pbnjson::JObject jsonItem;
         jsonItem.put("sender",  it.second.sender);
