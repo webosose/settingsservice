@@ -51,8 +51,8 @@ namespace Utils {
         if (n == 0)
             n = 1;
 
-        std::string::size_type start = 0;
-        std::string::size_type mark = 0;
+        std::string::size_type start = std::string::npos;
+        std::string::size_type mark = std::string::npos;
         unsigned int i = 1;
         while (1) {
             //find the start of a non-delim
